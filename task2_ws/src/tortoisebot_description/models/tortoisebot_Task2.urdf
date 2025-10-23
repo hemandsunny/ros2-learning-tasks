@@ -153,7 +153,7 @@
     <axis xyz="0 0 0"/>
     <parent link="base_link"/>
     <child link="lidar_link"/>
-    <origin rpy="0 3.14 0" xyz="0 0 0.180"/>
+    <origin rpy="0 0 0" xyz="0 0 0.180"/>
   </joint>
 
 

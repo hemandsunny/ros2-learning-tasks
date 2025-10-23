@@ -2,7 +2,7 @@ import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import LaserScan
 from std_msgs.msg import Float32
-from math import isinf,isnan
+from math import isinf,isnan,pi
 
 
 class LidarFilterNode(Node):
@@ -18,35 +18,34 @@ class LidarFilterNode(Node):
 
         self.msgData=None
         self.resultVariable=[]
+        self.get_logger().warn('[DEBUG][CUSTOM_FILTER_NODE] STARTED')
 
 
         #timer_period=0.125 #seconds
         #self.timer=self.create_timer(timer_period,self.publisher_callback) # if publishing at specific interval
         
-    def movingAverageFilter():
-        pass
 
     @staticmethod
     def spatialMedianFilter(listVariable,windowSize=5):
-        rangeLength=len(listVariable)
-        medianFilteredList=[]
+        n=len(listVariable)
+        half=windowSize//2
+        localFilteredList=[]
 
-        for i in range(rangeLength):
+        for i in range(n):
+            start=max(0,i-half)
+            end=min(n,i+half+1)
+
+            window=listVariable[start:end]
+            window.sort()
+            m=len(window)
+            if len(window)%2==1:
+                median=window[m//2]
+            else:
+                median=(window[(m//2)-1]+window[m//2])/2
+            localFilteredList.append(median)
             
-            if i != rangeLength-2 and i != rangeLength-1:
-                currentWindow=[listVariable[i-2],listVariable[i-1],listVariable[i],listVariable[i+1],listVariable[i+2]]
-                currentWindow.sort()
-                medianFilteredList.append(currentWindow[2])
-            if i==rangeLength-2:
-                currentWindow=[listVariable[i-2],listVariable[i-1],listVariable[i],listVariable[i+1],listVariable[0]]
-                currentWindow.sort()
-                medianFilteredList.append(currentWindow[2])
-            if i==rangeLength-1:
-                currentWindow=[listVariable[i-2],listVariable[i-1],listVariable[i],listVariable[0],listVariable[1]]
-                currentWindow.sort()
-                medianFilteredList.append(currentWindow[2])
-        
-        return medianFilteredList
+
+        return localFilteredList
 
     
     @staticmethod
@@ -61,17 +60,19 @@ class LidarFilterNode(Node):
         return minValFilteredList
     
     @staticmethod
-    def FrontRangeFilter(listVariable,maxSample):
+    def FrontRangeFilter(listVariable,aMin,aInc,minMaxAngle):
         listLength=len(listVariable)
         updatedList=[0]*listLength
-
-        for i in range(listLength//2):
-            
-            if i in range(maxSample):
+        
+        cropMin=minMaxAngle[0]
+        cropMax=minMaxAngle[1]
+        for i in range(len(listVariable)):
+            currentAngle=int((aMin+(i*aInc))*180/pi)
+            #print(i,' = ',currentAngle,' ',listVariable[i])
+            if currentAngle in list(range(cropMin,cropMax+1)):
                 updatedList[i]=listVariable[i]
-                updatedList[-i]=listVariable[-i]
             else:
-                updatedList[i]=(float('inf'))
+                updatedList[i]=float('inf')
         
         return updatedList
     
@@ -80,13 +81,18 @@ class LidarFilterNode(Node):
         # /scan INCOMING DATA
         self.msgData=msg
         distanceList=list(msg.ranges)
-        sampleCount=len(distanceList)
-        requiredAngleDegrees=15 #degrees
-        requiredMaxSample=(int)((sampleCount/360)*requiredAngleDegrees)
-                                
-        
+        # sampleCount=len(distanceList)
+        # requiredAngleDegrees=15 #degrees
+        # requiredMaxSample=(int)((sampleCount/360)*requiredAngleDegrees)
+        minSensorAngle=float(msg.angle_min)
+        maxSensorAngle=float(msg.angle_max)
+        minMaxRequiredAngle=(-15,15) # required range tuple
+        angleIncrement=msg.angle_increment
+
         # EXTRACTING DATA ONLY IN -15 TO 15 DEGREES
-        angleFilteredScan=self.FrontRangeFilter(distanceList,requiredMaxSample)
+        angleFilteredScan=self.FrontRangeFilter(distanceList,minSensorAngle,angleIncrement,minMaxRequiredAngle)
+        # print(angleFilteredScan)
+        # print(len(angleFilteredScan))
         
         # APPLYING MEDIAN FILTER TO MANAGE SPIKES
         medianFilteredScan=self.spatialMedianFilter(angleFilteredScan)
@@ -94,21 +100,24 @@ class LidarFilterNode(Node):
 
 
         # FILTERING OUT INVALID VALUES - inf,NaN,Zeros
-        lidarMinRange=msg.range_min+0.3
+        lidarMinRange=msg.range_min
         lidarMaxRange=msg.range_max
         minValFilteredList=self.minimumValidFilter(medianFilteredScan,lidarMinRange,lidarMaxRange)
         #print(minValFilteredList)
-        
-        self.resultVariable=min(minValFilteredList)
+        try:
+            self.resultVariable=min(minValFilteredList)
+        except ValueError:
+            self.get_logger().warn('[DEBUG][CUSTOM_FILTER_NODE] NO OBJECT DETECTED!')
+            self.resultVariable=float('inf')
 
+        # self.resultVariable=angleFilteredScan
 
-
-        self.get_logger().info('[DEBUG] SUBSCRIBED TO /scan')
+        self.get_logger().info('[DEBUG][CUSTOM_FILTER_NODE] SUBSCRIBED TO /scan')
         self.publisher_callback()
     
     def publisher_callback(self):
         if self.msgData is None:
-            self.get_logger().warn('[DEBUG] NO SCAN DATA RECIEVED')
+            self.get_logger().warn('[DEBUG][CUSTOM_FILTER_NODE] NO SCAN DATA RECIEVED')
             return
         
         
@@ -126,8 +135,8 @@ class LidarFilterNode(Node):
         rangeFilterOutput=Float32()
         rangeFilterOutput.data=self.resultVariable
         self.publisher.publish(rangeFilterOutput)
-        self.get_logger().info('[DEBUG] Closest Distance %f' %self.resultVariable)
-        self.get_logger().info('[DEBUG] Publishing to /')
+        self.get_logger().info('[DEBUG][CUSTOM_FILTER_NODE] Closest Distance %f' %self.resultVariable)
+        self.get_logger().info('[DEBUG][CUSTOM_FILTER_NODE] Publishing to /')
 
 
 
