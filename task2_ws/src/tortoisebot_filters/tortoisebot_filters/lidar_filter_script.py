@@ -91,8 +91,8 @@ class LidarFilterNode(Node):
         minMaxRequiredAngle=(-15,15) # required range tuple
         angleIncrement=msg.angle_increment
 
-        # EXTRACTING DATA ONLY IN -15 TO 15 DEGREES
-        angleFilteredScan=self.FrontRangeFilter(distanceList,minSensorAngle,angleIncrement,minMaxRequiredAngle)
+        # EXTRACTING DATA ONLY IN -15 TO 15 DEGREES # Assuming z is up so values are ranging from - 180 to 180 in counterclockwise
+        angleFilteredScan=self.FrontRangeFilter(distanceList,minSensorAngle,angleIncrement,minMaxRequiredAngle) 
         # print(angleFilteredScan)
         # print(len(angleFilteredScan))
         
