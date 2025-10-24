@@ -3,4 +3,10 @@ The goal of this project is to build a solid understanding of core ROS 2 princip
 
 Task 1 - Simulate tortoisebot.urdf in Gazebo and run it using Teleop
 
+Go to task1_ws directory -``cd task1_ws``
+Build the workspace - ``colcon build``
+RViz only launch - ``ros2 launch tortoisebot_description rviz_launch.py ``
+Gazebo+Rviz launch - ``ros2 launch tortoisebot_gazebo gazebo_launch.py``
+
+
 Task 2 - Get nearest object distance using LiDAR and laser filters
