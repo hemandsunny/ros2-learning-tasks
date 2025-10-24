@@ -19,6 +19,8 @@ class LidarFilterNode(Node):
         self.msgData=None
         self.resultVariable=[]
         self.get_logger().warn('[DEBUG][CUSTOM_FILTER_NODE] STARTED')
+        self.get_logger().info('[DEBUG][CUSTOM_FILTER_NODE] SUBSCRIBED TO /scan')
+        self.get_logger().info('[DEBUG][CUSTOM_FILTER_NODE] Publishing to /closest_object_distance')
 
 
         #timer_period=0.125 #seconds
@@ -112,7 +114,7 @@ class LidarFilterNode(Node):
 
         # self.resultVariable=angleFilteredScan
 
-        self.get_logger().info('[DEBUG][CUSTOM_FILTER_NODE] SUBSCRIBED TO /scan')
+        
         self.publisher_callback()
     
     def publisher_callback(self):
@@ -135,8 +137,7 @@ class LidarFilterNode(Node):
         rangeFilterOutput=Float32()
         rangeFilterOutput.data=self.resultVariable
         self.publisher.publish(rangeFilterOutput)
-        self.get_logger().info('[DEBUG][CUSTOM_FILTER_NODE] Closest Distance %f' %self.resultVariable)
-        self.get_logger().info('[DEBUG][CUSTOM_FILTER_NODE] Publishing to /')
+        self.get_logger().info('[DEBUG][CUSTOM_FILTER_NODE] Publishing Closest Distance %f' %self.resultVariable)
 
 
 

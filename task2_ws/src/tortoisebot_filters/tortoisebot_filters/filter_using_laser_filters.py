@@ -19,6 +19,8 @@ class LidarFilterNode(Node):
         self.msgData=None
         self.resultVariable=[]
         self.get_logger().info('[DEBUG][LASER_FILTER_NODE] STARTED ')
+        self.get_logger().info('[DEBUG][LASER_FILTER_NODE] SUBSCRIBED TO /scan_filtered')
+        self.get_logger().info('[DEBUG][LASER_FILTER_NODE] Publishing to /closest_object_distance')
     
     @staticmethod
     def minimumValidFilter(listVariable,minRange,maxRange):
@@ -53,7 +55,6 @@ class LidarFilterNode(Node):
             self.resultVariable=float('inf')
             
 
-        self.get_logger().info('[DEBUG][LASER_FILTER_NODE] SUBSCRIBED TO /scan_filtered')
         self.publisher_callback()
     
     def publisher_callback(self):
@@ -64,8 +65,7 @@ class LidarFilterNode(Node):
         rangeFilterOutput=Float32()
         rangeFilterOutput.data=self.resultVariable
         self.publisher.publish(rangeFilterOutput)
-        self.get_logger().info('[DEBUG][LASER_FILTER_NODE] Closest Distance %f' %self.resultVariable)
-        self.get_logger().info('[DEBUG][LASER_FILTER_NODE] Publishing to /')
+        self.get_logger().info('[DEBUG][LASER_FILTER_NODE] Publishing Closest Distance %f' %self.resultVariable)
 
 
 

@@ -137,18 +137,8 @@
         <cylinder length="0.06" radius="0.035"/>
       </geometry>
     </collision>
-    <!--
-    <inertial>
-      <mass value="0.1"/>
-      <inertia ixx="5.1458e-5" iyy="5.1458e-5" izz="6.125e-5" ixy="0" ixz="0" iyz="0"/>
-    </inertial>-->
-
-    
-
-
   </link>
-
-
+  <!-- LIDAR Joint -->
   <joint name="lidar_joint" type="fixed">
     <axis xyz="0 0 0"/>
     <parent link="base_link"/>
@@ -215,7 +205,7 @@
          <noise>
                     <type>gaussian</type>
                     <mean>0.0</mean>
-                    <stddev>0.02</stddev>
+                    <stddev>0.00</stddev>
                 </noise>
     </ray>
     <always_on>1</always_on>
