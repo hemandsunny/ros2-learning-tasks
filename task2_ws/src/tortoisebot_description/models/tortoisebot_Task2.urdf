@@ -205,7 +205,7 @@
          <noise>
                     <type>gaussian</type>
                     <mean>0.0</mean>
-                    <stddev>0.00</stddev>
+                    <stddev>0.02</stddev>
                 </noise>
     </ray>
     <always_on>1</always_on>
