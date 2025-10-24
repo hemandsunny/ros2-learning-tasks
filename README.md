@@ -1,7 +1,7 @@
 # ros2-learning-tasks
 The goal of this project is to build a solid understanding of core ROS 2 principles (nodes, topics, launch files, custom packages) and their application in a realistic, simulated environment.
 
-Task 1 - Simulate tortoisebot.urdf in Gazebo and run it using Teleop
+**Task 1 - Simulate tortoisebot.urdf in Gazebo and run it using Teleop**
 
 Go to task1_ws directory -``cd task1_ws``
 
@@ -12,7 +12,7 @@ RViz only launch - ``ros2 launch tortoisebot_description rviz_launch.py ``
 Gazebo+Rviz launch - ``ros2 launch tortoisebot_gazebo gazebo_launch.py``
 
 
-Task 2 - Get nearest object distance using LiDAR and laser filters
+**Task 2 - Get nearest object distance using LiDAR and laser filters**
 
 Go to task2_ws directory - ``cd task2_ws``
 
