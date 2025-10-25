@@ -21,3 +21,14 @@ Build workspace - ``colcon build``
 Closest Distance using custom filter - ``ros2 launch tortoisebot_filters find_closest_distance_launch.py ``
 
 Closest Distance using laser_filters package - ``ros2 launch tortoisebot_filters find_closest_distance_launch.py  use_laser_filters:=true ``
+
+**Task 3 - Follow a Ball Shaped Object**
+
+Go to task2_ws directory - ``cd task3_ws``
+
+Build workspace - ``colcon build``
+
+Closest Distance using custom filter - ``ros2 launch tortoisebot_actions ball_follower_launch.py ``
+
+
+
