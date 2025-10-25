@@ -28,7 +28,7 @@ Go to task2_ws directory - ``cd task3_ws``
 
 Build workspace - ``colcon build``
 
-Closest Distance using custom filter - ``ros2 launch tortoisebot_actions ball_follower_launch.py ``
+Follow the closest object - ``ros2 launch tortoisebot_actions ball_follower_launch.py ``
 
 
 
