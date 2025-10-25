@@ -25,11 +25,11 @@ class BallFollowNode(Node):
             LaserScan,
             'scan_filtered',
             self.listener_callback,
-            10) # subscribing to /scan
-        self.publisher = self.create_publisher(Twist,'cmd_vel',10) #publishing to /closest_object_distance
+            10) # subscribing to /scan_filtered
+        self.publisher = self.create_publisher(Twist,'cmd_vel',10) #publishing to /cmd_vel
 
         self.msgData=None
-        self.safeDistanceObject=0.7
+        self.safeDistanceObject=0.7 # safe distance to keep from any object
         
         
         self.get_logger().warn('[DEBUG][BALL_FOLLOW_NODE] STARTED')
@@ -89,7 +89,7 @@ class BallFollowNode(Node):
         self.noObjectFlag=False
 
         if infCount == len(distanceList):
-            self.noObjectFlag=True
+            self.noObjectFlag=True    # if no objects are present, then no need to find direction
         else:
             objDistDir=self.findClosestObjectDirection(distanceList,minSensorAngle,maxSensorAngle,angleIncrement)
             self.targetAngle=objDistDir[0]
