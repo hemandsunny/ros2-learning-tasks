@@ -3,7 +3,7 @@ The goal of this project is to build a solid understanding of core ROS 2 princip
 
 **Common Setup**
 
-Go to task1_ws directory -``cd task<number>_ws``
+Go to task<number>_ws directory -``cd task<number>_ws``
 
 Build the workspace - ``colcon build``
 
