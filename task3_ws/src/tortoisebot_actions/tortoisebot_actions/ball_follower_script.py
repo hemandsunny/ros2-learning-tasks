@@ -67,8 +67,7 @@ class BallFollowNode(Node):
 
             
         # VELOCITY LIMITER
-        linearVel=min(0.5,linearVel)
-        linearVel=max(-1,linearVel)
+        linearVel=max(-1,min(0.5,linearVel))
         angularVel=min(0.5,angularVel)
 
         return (angularVel,linearVel)
