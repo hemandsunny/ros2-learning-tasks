@@ -5,17 +5,6 @@ from geometry_msgs.msg import Twist
 from math import isinf,isnan,pi,degrees,exp
 
 
-'''
-Twist msg type
-Vector3  linear
-	float64 x
-	float64 y
-	float64 z
-Vector3  angular
-	float64 x
-	float64 y
-	float64 z
-'''
 
 class BallFollowNode(Node):
 
@@ -25,11 +14,11 @@ class BallFollowNode(Node):
             LaserScan,
             'scan_filtered',
             self.listener_callback,
-            10) # subscribing to /scan_filtered
-        self.publisher = self.create_publisher(Twist,'cmd_vel',10) #publishing to /cmd_vel
+            10) # subscribing to /scan
+        self.publisher = self.create_publisher(Twist,'cmd_vel',10) #publishing to /closest_object_distance
 
         self.msgData=None
-        self.safeDistanceObject=0.7 # safe distance to keep from any object
+        self.safeDistanceObject=1
         
         
         self.get_logger().warn('[DEBUG][BALL_FOLLOW_NODE] STARTED')
@@ -56,21 +45,30 @@ class BallFollowNode(Node):
     def moveRobot(self,angularTarget=0.0,LinearTarget=0.0):
         (angularVel,linearVel)=(0.0,0.0)
         distDiff=LinearTarget-self.safeDistanceObject
+
         if angularTarget!=0.0:
-             angularVel=0.5*(angularTarget)
+             angularVel=(angularTarget/pi)
         if distDiff>0.025 and -0.25<angularTarget<0.25:
-            linearVel=1*distDiff
+            linearVel=(1/self.msgData.range_max)*distDiff
         if distDiff<0.0:# and -0.25<angularTarget<0.25:
-            linearVel=0.25*distDiff
+            linearVel=distDiff
         if distDiff==0.0:
             linearVel=0.0
 
             
         # VELOCITY LIMITER
-        linearVel=max(-1,min(0.5,linearVel))
-        angularVel=min(0.5,angularVel)
+        linearVel=min(0.5,linearVel)
+        linearVel=max(-1,linearVel)
+        angularVel=min(1,angularVel)
 
         return (angularVel,linearVel)
+    
+    
+    def stopRobot(self):
+        outputCmdVel=Twist()
+        outputCmdVel.angular.z=0.0
+        outputCmdVel.linear.x=0.0
+        self.publisher.publish(outputCmdVel)
             
         
         
@@ -88,7 +86,7 @@ class BallFollowNode(Node):
         self.noObjectFlag=False
 
         if infCount == len(distanceList):
-            self.noObjectFlag=True    # if no objects are present, then no need to find direction
+            self.noObjectFlag=True
         else:
             objDistDir=self.findClosestObjectDirection(distanceList,minSensorAngle,maxSensorAngle,angleIncrement)
             self.targetAngle=objDistDir[0]
@@ -116,12 +114,27 @@ class BallFollowNode(Node):
 
 
 def main(args=None):
+    import subprocess
+    cmd = [
+    "ros2", "topic", "pub", "--once", "/cmd_vel", "geometry_msgs/msg/Twist",
+    "{linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}}"
+    ]
+    
+
     rclpy.init(args=args)
     lidarsubb=BallFollowNode()
-    rclpy.spin(lidarsubb)
-
-    lidarsubb.destroy_node()
-    rclpy.shutdown()
+    try:
+        rclpy.spin(lidarsubb)
+    except KeyboardInterrupt:
+        try:
+            lidarsubb.destroy_node()
+            rclpy.shutdown()
+        except rclpy._rclpy_pybind11.RCLError:
+            print('\n NODE ALREADY SHUTDOWN')
+    finally:
+        print('STOPPING ROBOT')
+        subprocess.run(cmd)
+        
 
 if __name__=='__main__':
     main()
