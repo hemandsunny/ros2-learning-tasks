@@ -24,6 +24,9 @@ setup(
     entry_points={
         'console_scripts': [
             'follow_the_closest_object = tortoisebot_actions.ball_follower_script:main',
+            'find_the_closest_object = tortoisebot_actions.closest_object_finder:main',
+            'action_server = tortoisebot_actions.action_server_test:main',
+            'action_clientt = tortoisebot_actions.action_client_test:main',
         ],
     },
 )

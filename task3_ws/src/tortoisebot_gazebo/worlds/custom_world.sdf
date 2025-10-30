@@ -66,6 +66,16 @@
       <pose>0 0 0 0 0 0</pose>
       <self_collide>false</self_collide>
     </model>
+    <include>
+      <uri>file:///home/arz-1013/.gz/fuel/fuel.gazebosim.org/openrobotics/models/hatchback_2/4</uri>
+      <name>hatchback</name>
+      <pose>1.3459737459031276 -1.9204049932407954 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>file:///home/arz-1013/.gz/fuel/fuel.gazebosim.org/openrobotics/models/oak tree/7</uri>
+      <name>Oak tree</name>
+      <pose>4.5268819065741068 0.67996729662433208 0 0 0 0</pose>
+    </include>
     <light name='sun' type='directional'>
       <pose>0 0 10 0 0 0</pose>
       <cast_shadows>true</cast_shadows>
@@ -85,6 +95,5 @@
         <falloff>0</falloff>
       </spot>
     </light>
-    
   </world>
 </sdf>

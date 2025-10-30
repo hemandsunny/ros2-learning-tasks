@@ -25,6 +25,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'start_moving_sphere = tortoisebot_gazebo.moving_sphere:main',            
         ],
     },
 )

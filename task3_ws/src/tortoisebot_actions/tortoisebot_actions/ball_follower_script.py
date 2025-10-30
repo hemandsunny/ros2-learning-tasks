@@ -47,20 +47,23 @@ class BallFollowNode(Node):
         distDiff=LinearTarget-self.safeDistanceObject
 
         if angularTarget!=0.0:
-             angularVel=(angularTarget/pi)
+             angularVel=(5*angularTarget/pi)
         if distDiff>0.025 and -0.25<angularTarget<0.25:
-            linearVel=(1/self.msgData.range_max)*distDiff
+            linearVel=(3/self.msgData.range_max)*distDiff
         if distDiff<0.0:# and -0.25<angularTarget<0.25:
-            linearVel=distDiff
+            linearVel=2*distDiff
         if distDiff==0.0:
             linearVel=0.0
 
             
-        # VELOCITY LIMITER
-        linearVel=min(0.5,linearVel)
-        linearVel=max(-1,linearVel)
-        angularVel=min(1,angularVel)
-
+        dirValue='Turning Left' if angularVel>0.0 else 'Turning Right'
+        speedValue='Going forward' if linearVel>0.0 else 'Going Reverse'
+        # # VELOCITY LIMITER
+        # linearVel=min(1.0,linearVel)
+        # linearVel=max(-1.0,linearVel)
+        # angularVel=min(1.0,angularVel)
+        self.get_logger().info('[DEBUG][BALL_FOLLOW_NODE] %s ' %dirValue)
+        self.get_logger().info('[DEBUG][BALL_FOLLOW_NODE] %s ' %speedValue)
         return (angularVel,linearVel)
     
     
@@ -108,8 +111,8 @@ class BallFollowNode(Node):
         
         
         self.publisher.publish(outputCmdVel)
-        self.get_logger().info('[DEBUG][BALL_FOLLOW_NODE] Dir : %f' %self.targetAngle)
-        self.get_logger().info('[DEBUG][BALL_FOLLOW_NODE] Dist: %f' %self.resultVariable)
+        # self.get_logger().info('[DEBUG][BALL_FOLLOW_NODE] Dir : %f' %self.targetAngle)
+        # self.get_logger().info('[DEBUG][BALL_FOLLOW_NODE] Dist: %f' %self.resultVariable)
 
 
 

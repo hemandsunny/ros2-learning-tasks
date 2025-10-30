@@ -85,6 +85,31 @@
         <falloff>0</falloff>
       </spot>
     </light>
-    
+
+    <actor name="jumping_box">
+  <skin>
+    <filename>path/to/box_mesh.dae</filename>
+  </skin>
+  <animation name="jump" filename="path/to/jump_animation.dae"/>
+  <script>
+    <loop>true</loop>
+    <trajectory id="0" type="jump">
+      <waypoint>
+        <time>0</time>
+        <pose>0 0 0 0 0 0</pose>
+      </waypoint>
+      <waypoint>
+        <time>1</time>
+        <pose>0 0 1 0 0 0</pose>
+      </waypoint>
+      <waypoint>
+        <time>2</time>
+        <pose>0 0 0 0 0 0</pose>
+      </waypoint>
+    </trajectory>
+  </script>
+</actor>
+
+
   </world>
 </sdf>
