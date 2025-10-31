@@ -45,16 +45,28 @@ class BallFollowNode(Node):
     def moveRobot(self,angularTarget=0.0,LinearTarget=0.0):
         (angularVel,linearVel)=(0.0,0.0)
         distDiff=LinearTarget-self.safeDistanceObject
+        
 
         if angularTarget!=0.0:
-             angularVel=(5*angularTarget/pi)
-        if distDiff>0.025 and -0.25<angularTarget<0.25:
-            linearVel=(3/self.msgData.range_max)*distDiff
-        if distDiff<0.0:# and -0.25<angularTarget<0.25:
-            linearVel=2*distDiff
-        if distDiff==0.0:
+            angularVel=(1.5*angularTarget)
+        if distDiff>0.025:
+            linearVel=0.5*distDiff*(1-(abs(angularVel))/pi)
+        elif distDiff<0.0:# and -0.25<angularTarget<0.25:
+            linearVel=2.5*distDiff
+        else:
             linearVel=0.0
-
+            
+        
+        # angularVel = max(-max_ang, min(max_ang, angularVel))
+        # # --- Smooth linear velocity ---
+        # # # Reduce speed as angular error grows
+        # lin_scale = max(0.0, 1.0 - abs(angularTarget))
+        # if distDiff > 0.02:
+        #     linearVel = k_lin * distDiff * lin_scale
+        # elif distDiff < 0.0:
+        #     linearVel = 0.5 * distDiff  # approach gently
+        # # Limit speeds
+        # linearVel = max(-max_lin, min(max_lin, linearVel))
             
         dirValue='Turning Left' if angularVel>0.0 else 'Turning Right'
         speedValue='Going forward' if linearVel>0.0 else 'Going Reverse'
@@ -62,8 +74,9 @@ class BallFollowNode(Node):
         # linearVel=min(1.0,linearVel)
         # linearVel=max(-1.0,linearVel)
         # angularVel=min(1.0,angularVel)
-        self.get_logger().info('[DEBUG][BALL_FOLLOW_NODE] %s ' %dirValue)
-        self.get_logger().info('[DEBUG][BALL_FOLLOW_NODE] %s ' %speedValue)
+        # self.get_logger().info('[DEBUG][BALL_FOLLOW_NODE] %s ' %dirValue)
+        # self.get_logger().info('[DEBUG][BALL_FOLLOW_NODE] %s ' %speedValue)
+        self.get_logger().info('[DEBUG][BALL_FOLLOW_NODE] %s %s' %(angularTarget,LinearTarget))
         return (angularVel,linearVel)
     
     
